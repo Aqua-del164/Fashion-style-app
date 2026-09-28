@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: lumiere-atelier
+    env: node
+    buildCommand: npm install
+    startCommand: node image-gen-server.js
+    envVars:
+      - key: PORT
+        value: 3002
