@@ -1,0 +1,14 @@
+{
+  "name": "fashion-style-app",
+  "version": "1.0.0",
+  "description": "AI Fashion Studio and Digital Wardrobe Platform",
+  "main": "image-gen-server.js",
+  "scripts": {
+    "start": "node image-gen-server.js"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.1.1",
+    "express": "^4.18.2",
+    "multer": "^1.4.5-lts.1"
+  }
+}
