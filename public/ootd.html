@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Outfit Generator | Lumière Atelier</title>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #fcfbf9; color: #2c2825; margin: 0; padding: 24px; }
+        .container { max-width: 800px; margin: 0 auto; background: #fff; padding: 32px; border-radius: 20px; border: 1px solid #e8dfd5; text-align: center; }
+        .btn-green { background-color: #047857; color: white; padding: 14px 24px; border-radius: 12px; font-weight: bold; border: none; cursor: pointer; font-size: 16px; margin-top: 20px; }
+        .btn-green:hover { background-color: #065f46; }
+        .output-box { margin-top: 24px; background: #f4efe6; padding: 20px; border-radius: 12px; min-height: 250px; display: flex; align-items: center; justify-content: center; flex-direction: column; }
+        #weatherBadge { background: #f4efe6; padding: 10px 16px; border-radius: 8px; margin-bottom: 16px; font-size: 14px; font-weight: 600; color: #5a524c; display: none; border: 1px solid #e8dfd5; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div style="text-align: left;"><a href="http://localhost:3000" style="color: #2c2825; font-weight: bold; text-decoration: none;">← Home</a></div>
+        <h2>Daily AI Stylist & Weather Matcher ✨</h2>
+        <p style="color: #6b635b;">Get a fresh AI-synthesized outfit visualization every day tailored to local weather conditions in North Macedonia using your digital closet.</p>
+
+        <div style="margin-top: 20px;">
+            <label style="font-weight: bold; display: block; margin-bottom: 8px;">Upload Your Base Photo for Today:</label>
+            <input type="file" id="dailyUserPhoto" accept="image/*">
+        </div>
+
+        <button class="btn-green" onclick="generateDailyOutfit()">Generate Today's Look 🌟</button>
+
+        <div class="output-box" id="ootdOutput">
+            <div id="weatherBadge"></div>
+            <span id="outputPlaceholder" style="color: #8c8279;">Click generate to style today's look based on your wardrobe pieces and live weather.</span>
+        </div>
+    </div>
+
+    <script>
+        async function generateDailyOutfit() {
+            const photoInput = document.getElementById('dailyUserPhoto').files[0];
+            const outputBox = document.getElementById('ootdOutput');
+            const weatherBadge = document.getElementById('weatherBadge');
+
+            if (!photoInput) {
+                alert("Please upload your base photo first!");
+                return;
+            }
+
+            weatherBadge.style.display = 'none';
+            outputBox.innerHTML = "<p>Checking local weather and styling your look for today... Please wait.</p>";
+
+            const formData = new FormData();
+            formData.append('userPhoto', photoInput);
+
+            try {
+                const response = await fetch('http://localhost:3002/api/daily-ootd-weather', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    weatherBadge.innerText = data.weatherInfo;
+                    weatherBadge.style.display = 'block';
+
+                    outputBox.innerHTML = '';
+                    outputBox.appendChild(weatherBadge);
+
+                    const img = document.createElement('img');
+                    img.src = data.imageUrl;
+                    img.style.cssText = "max-width: 100%; max-height: 450px; border-radius: 12px; margin-top: 10px;";
+                    outputBox.appendChild(img);
+
+                    const p = document.createElement('p');
+                    p.style.cssText = "margin-top: 12px; font-size: 14px; color: #423c38;";
+                    p.innerHTML = `<strong>Stylist & Weather Note:</strong> ${data.description}`;
+                    outputBox.appendChild(p);
+
+                } else {
+                    outputBox.innerHTML = `<p style="color: #c0392b;">Error: ${data.error}</p>`;
+                }
+            } catch (err) {
+                outputBox.innerHTML = `<p style="color: #c0392b;">Network error: ${err.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>

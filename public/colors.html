@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Color Season Analysis | Lumière Atelier</title>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #fcfbf9; color: #2c2825; margin: 0; padding: 24px; }
+        .container { max-width: 800px; margin: 0 auto; background: #fff; padding: 32px; border-radius: 20px; border: 1px solid #e8dfd5; }
+        .btn-dark { background-color: #2c2825; color: white; padding: 12px 24px; border-radius: 10px; font-weight: bold; border: none; cursor: pointer; width: 100%; margin-top: 12px; }
+        .output-box { margin-top: 24px; background: #f4efe6; padding: 20px; border-radius: 12px; white-space: pre-line; line-height: 1.6; font-size: 14px; display: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/index.html" style="color: #2c2825; font-weight: bold; text-decoration: none;">← Home</a>
+        <h2>Personal Color Season Analysis 🎨</h2>
+        <p style="color: #6b635b;">Upload a clear selfie in natural lighting to discover your exact seasonal palette.</p>
+
+        <input type="file" id="selfieInput" accept="image/*" style="margin-top: 12px;">
+        <button class="btn-dark" onclick="analyzeColors()">Analyze My Colors ✨</button>
+
+        <div class="output-box" id="colorOutput"></div>
+    </div>
+    <script>
+        async function analyzeColors() {
+            const file = document.getElementById('selfieInput').files[0];
+            const output = document.getElementById('colorOutput');
+            if (!file) { alert("Please upload a selfie!"); return; }
+            output.style.display = 'block';
+            output.innerText = "Analyzing skin undertones and hair contrast...";
+
+            const formData = new FormData();
+            formData.append('selfie', file);
+
+            const res = await fetch('/api/analyze-colors', { method: 'POST', body: formData });
+            const data = await res.json();
+            output.innerText = data.success ? data.analysis : "Error: " + data.error;
+        }
+    </script>
+</body>
+</html>

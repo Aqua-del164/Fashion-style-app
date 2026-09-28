@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Outfit Calendar & History | Lumière Atelier</title>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #fcfbf9; color: #2c2825; margin: 0; padding: 24px; }
+        .container { max-width: 900px; margin: 0 auto; background: #fff; padding: 32px; border-radius: 20px; border: 1px solid #e8dfd5; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; margin-top: 24px; }
+        .card { background: #f4efe6; border-radius: 12px; padding: 12px; }
+        .card img { width: 100%; height: 160px; object-fit: cover; border-radius: 8px; }
+        .btn-dark { background-color: #2c2825; color: white; padding: 10px 18px; border-radius: 8px; font-weight: bold; border: none; cursor: pointer; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/index.html" style="color: #2c2825; font-weight: bold; text-decoration: none;">← Home</a>
+        <h2>Outfit Calendar & History 📅</h2>
+        <p style="color: #6b635b;">Log and review what you wore each day to track your wardrobe rotation.</p>
+
+        <div style="background: #fcfbf9; padding: 16px; border-radius: 12px; margin-top: 16px; border: 1px solid #e8dfd5;">
+            <h4>Log Today's Outfit</h4>
+            <input type="date" id="logDate" style="padding: 8px; margin-right: 10px;">
+            <input type="text" id="logDesc" placeholder="Outfit description / notes" style="padding: 8px; width: 300px; margin-right: 10px;">
+            <button class="btn-dark" onclick="logOutfit()">Save to Calendar</button>
+        </div>
+
+        <div class="grid" id="historyGrid"></div>
+    </div>
+    <script>
+        async function loadHistory() {
+            const res = await fetch('/api/outfit-history');
+            const data = await res.json();
+            const grid = document.getElementById('historyGrid');
+            grid.innerHTML = '';
+            if (data.success && data.history) {
+                data.history.forEach(item => {
+                    grid.innerHTML += `<div class="card">
+                        <small style="font-weight: bold; color: #5a524c;">${item.date}</small>
+                        <p style="font-size: 13px; margin-top: 8px;">${item.description}</p>
+                    </div>`;
+                });
+            }
+        }
+        async function logOutfit() {
+            const date = document.getElementById('logDate').value;
+            const description = document.getElementById('logDesc').value;
+            if (!date || !description) { alert("Please fill in date and description!"); return; }
+            await fetch('/api/log-outfit', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ date, imageUrl: '', description })
+            });
+            loadHistory();
+        }
+        loadHistory();
+    </script>
+</body>
+</html>

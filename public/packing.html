@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Packing List Generator | Lumière Atelier</title>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #fcfbf9; color: #2c2825; margin: 0; padding: 24px; }
+        .container { max-width: 800px; margin: 0 auto; background: #fff; padding: 32px; border-radius: 20px; border: 1px solid #e8dfd5; }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-weight: bold; margin-bottom: 6px; font-size: 14px; }
+        .form-group input, .form-group select { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #dcd6ce; box-sizing: border-box; }
+        .btn-dark { background-color: #2c2825; color: white; padding: 12px 24px; border-radius: 10px; font-weight: bold; border: none; cursor: pointer; font-size: 15px; width: 100%; margin-top: 10px; }
+        .btn-dark:hover { background-color: #423c38; }
+        .output-box { margin-top: 24px; background: #f4efe6; padding: 20px; border-radius: 12px; white-space: pre-line; line-height: 1.6; font-size: 14px; color: #423c38; display: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div style="margin-bottom: 16px;"><a href="http://localhost:3000" style="color: #2c2825; font-weight: bold; text-decoration: none;">← Home</a></div>
+        <h2>AI Travel Packing List & Capsule Wardrobe ✈️</h2>
+        <p style="color: #6b635b;">Enter your destination and travel duration to curate a smart packing checklist from your digital closet.</p>
+
+        <div class="form-group" style="margin-top: 20px;">
+            <label>Destination (City / Country):</label>
+            <input type="text" id="destinationInput" placeholder="e.g., Paris, France or Rome">
+        </div>
+
+        <div class="form-group">
+            <label>Trip Duration:</label>
+            <input type="text" id="durationInput" placeholder="e.g., 4 days / 1 week">
+        </div>
+
+        <div class="form-group">
+            <label>Preferred Vibe / Style:</label>
+            <select id="styleInput">
+                <option value="chic and minimalist">Chic & Minimalist</option>
+                <option value="business professional">Business Professional / Corporate</option>
+                <option value="casual streetwear">Casual Streetwear</option>
+                <option value="elegant evening">Elegant Evening & Dinner</option>
+            </select>
+        </div>
+
+        <button class="btn-dark" onclick="generatePackingList()">Generate Packing Checklist 🧳</button>
+
+        <div class="output-box" id="packingOutput"></div>
+    </div>
+
+    <script>
+        async function generatePackingList() {
+            const destination = document.getElementById('destinationInput').value;
+            const duration = document.getElementById('durationInput').value;
+            const style = document.getElementById('styleInput').value;
+            const outputBox = document.getElementById('packingOutput');
+
+            if (!destination || !duration) {
+                alert("Please enter both your destination and trip duration!");
+                return;
+            }
+
+            outputBox.style.display = 'block';
+            outputBox.innerText = `Curating your capsule wardrobe and packing list for ${destination}...`;
+
+            try {
+                const response = await fetch('http://localhost:3002/api/generate-packing-list', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ destination, duration, style })
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    outputBox.innerText = data.packingList;
+                } else {
+                    outputBox.innerText = "Error: " + data.error;
+                }
+            } catch (err) {
+                outputBox.innerText = "Network error: " + err.message;
+            }
+        }
+    </script>
+</body>
+</html>

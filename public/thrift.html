@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Thrift & Resale Finder | Lumière Atelier</title>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #fcfbf9; color: #2c2825; margin: 0; padding: 24px; }
+        .container { max-width: 800px; margin: 0 auto; background: #fff; padding: 32px; border-radius: 20px; border: 1px solid #e8dfd5; }
+        .btn-dark { background-color: #2c2825; color: white; padding: 12px 24px; border-radius: 10px; font-weight: bold; border: none; cursor: pointer; width: 100%; margin-top: 12px; }
+        .output-box { margin-top: 24px; background: #f4efe6; padding: 20px; border-radius: 12px; white-space: pre-line; line-height: 1.6; font-size: 14px; display: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="http://localhost:3000" style="color: #2c2825; font-weight: bold; text-decoration: none;">← Home</a>
+        <h2>Thrift & Resale Price Finder ♻️</h2>
+        <p style="color: #6b635b;">Find sustainable second-hand alternatives and estimated resale prices for any outfit or piece.</p>
+
+        <input type="text" id="itemInput" placeholder="e.g., Chocolate brown ribbed turtleneck sweater" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #dcd6ce; box-sizing: border-box; margin-top: 12px;">
+        <button class="btn-dark" onclick="findThriftItems()">Search Resale Platforms 🔍</button>
+
+        <div class="output-box" id="thriftOutput"></div>
+    </div>
+    <script>
+        async function findThriftItems() {
+            const itemDescription = document.getElementById('itemInput').value;
+            const outputBox = document.getElementById('thriftOutput');
+            if (!itemDescription) { alert("Please enter an item description!"); return; }
+            outputBox.style.display = 'block';
+            outputBox.innerText = "Scanning second-hand networks and resale markets...";
+
+            const res = await fetch('http://localhost:3002/api/thrift-finder', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ itemDescription })
+            });
+            const data = await res.json();
+            outputBox.innerText = data.success ? data.results : "Error: " + data.error;
+        }
+    </script>
+</body>
+</html>
